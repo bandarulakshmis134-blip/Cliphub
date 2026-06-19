@@ -28,7 +28,7 @@ const Signup = () => {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/signup",
+        "https://cliphub-kyq2.onrender.com/api/auth/signup",
         {
           method: "POST",
           headers: {

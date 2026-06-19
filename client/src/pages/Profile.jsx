@@ -17,7 +17,7 @@ const Profile = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:5000/api/communities/my-communities",
+        "https://cliphub-kyq2.onrender.com/api/communities/my-communities",
         {
           headers: {
             Authorization: `Bearer ${token}`,

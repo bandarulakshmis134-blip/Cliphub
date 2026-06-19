@@ -19,8 +19,8 @@ const Home = () => {
         try {
           const url =
             search.trim() !== ""
-              ? `http://localhost:5000/api/communities/search?search=${search}`
-              : "http://localhost:5000/api/communities/popular";
+              ? `https://cliphub-kyq2.onrender.com/api/communities/search?search=${search}`
+              : "https://cliphub-kyq2.onrender.com/api/communities/popular";
 
           const response =
             await fetch(url);

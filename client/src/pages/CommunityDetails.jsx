@@ -61,7 +61,7 @@ const CommunityDetails = () => {
         localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/communities/${id}`,
+        `https://cliphub-kyq2.onrender.com/api/communities/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -97,7 +97,7 @@ const CommunityDetails = () => {
           localStorage.getItem("token");
 
         const response = await fetch(
-          `http://localhost:5000/api/communities/${id}`,
+          `https://cliphub-kyq2.onrender.com/api/communities/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -173,7 +173,7 @@ const CommunityDetails = () => {
         localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/communities/${community._id}/join`,
+        `https://cliphub-kyq2.onrender.com/api/communities/${community._id}/join`,
         {
           method: "PUT",
           headers: {

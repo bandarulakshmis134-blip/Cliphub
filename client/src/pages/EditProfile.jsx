@@ -48,7 +48,7 @@ const EditProfile = () => {
         localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:5000/api/users/profile",
+        "https://cliphub-kyq2.onrender.com/api/users/profile",
         {
           method: "PUT",
 

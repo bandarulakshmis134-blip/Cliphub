@@ -12,7 +12,7 @@ const Communities = () => {
     const token = localStorage.getItem("token");
 
     fetch(
-      "http://localhost:5000/api/communities/user-communities",
+      "https://cliphub-kyq2.onrender.com/api/communities/user-communities",
       {
         headers: {
           Authorization: `Bearer ${token}`,
