@@ -12,6 +12,7 @@ const {
   joinCommunity,
   getUserCommunities,
   addContent,
+  deleteContent,
   getPopularCommunities,
   searchCommunities,
 } = require("../controllers/communityController");
@@ -35,6 +36,11 @@ router.post(
   "/:id/content",
   protect,
   addContent
+);
+router.delete(
+  "/:id/content/:contentId",
+  protect,
+  deleteContent
 );
 router.get(
   "/popular",

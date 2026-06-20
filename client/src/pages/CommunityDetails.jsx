@@ -34,6 +34,7 @@ const CommunityDetails = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showFileModal, setShowFileModal] =
     useState(false);
+  const [showMembers, setShowMembers] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -108,6 +109,10 @@ const CommunityDetails = () => {
         const data = await response.json();
 
         if (data.success) {
+          console.log(
+            data.community.members
+          );
+
           setCommunity(data.community);
         }
       } catch (error) {
@@ -194,6 +199,44 @@ const CommunityDetails = () => {
     } catch (error) {
       console.log(error);
       alert("Failed to join community");
+    }
+  };
+
+  const deleteContent = async (contentId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this content item?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `https://cliphub-kyq2.onrender.com/api/communities/${community._id}/content/${contentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setCommunity((prev) => ({
+          ...prev,
+          contents: prev.contents.filter(
+            (item) => item._id.toString() !== contentId.toString()
+          ),
+        }));
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Failed to delete content");
     }
   };
 
@@ -420,6 +463,7 @@ const CommunityDetails = () => {
         }
 
         .content-card{
+          position:relative;
           background:white;
 
           border:1px solid #E6DCDC;
@@ -427,6 +471,30 @@ const CommunityDetails = () => {
           border-radius:24px;
 
           overflow:hidden;
+        }
+
+        .content-delete-btn{
+          position:absolute;
+          top:12px;
+          right:12px;
+
+          width:34px;
+          height:34px;
+
+          border:none;
+          border-radius:50%;
+          background:rgba(255,255,255,0.9);
+
+          display:flex;
+          align-items:center;
+          justify-content:center;
+
+          cursor:pointer;
+          transition:.2s;
+        }
+
+        .content-delete-btn:hover{
+          background:#FFEAEA;
         }
 
         .content-image{
@@ -568,7 +636,19 @@ const CommunityDetails = () => {
                   {community.description}
                 </div>
 
-                <div className="members">
+                <div
+                  className="members"
+                  onClick={() => {
+                    if (isOwner) {
+                      setShowMembers(true);
+                    }
+                  }}
+                  style={{
+                    cursor: isOwner
+                      ? "pointer"
+                      : "default",
+                  }}
+                >
                   <FiUsers />
                   {community.members?.length || 0}
                   {" "}members
@@ -676,6 +756,16 @@ const CommunityDetails = () => {
                   )
                 }
               >
+                <button
+                  className="content-delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteContent(item._id);
+                  }}
+                  aria-label="Delete content"
+                >
+                  <FiTrash2 />
+                </button>
 
                 <div className="content-info">
 
@@ -720,6 +810,35 @@ const CommunityDetails = () => {
               communityId={community._id}
               onClose={() => setShowVideoModal(false)}
             />
+          )}
+
+          {showMembers && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2>Community Members</h2>
+
+                {community.members?.map((member) => (
+                  <div
+                    key={member._id || member.email}
+                    className="member-row"
+                  >
+                    <div>{member.fullName}</div>
+                    <div>{member.email}</div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => {
+                    setShowMembers(false);
+                  }}
+                  style={{
+                    marginTop: "15px",
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           )}
 
           {showFileModal && (

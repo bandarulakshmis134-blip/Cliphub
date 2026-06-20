@@ -68,6 +68,10 @@ const getCommunityById = async (
       .populate(
         "owner",
         "fullName profilePic"
+      )
+      .populate(
+        "members",
+        "fullName email profilePic"
       );
 
     if (!community) {
@@ -277,6 +281,62 @@ const addContent = async (req, res) => {
       message: error.message,
     });
 
+  }
+};
+
+const deleteContent = async (req, res) => {
+  try {
+    const { id, contentId } = req.params;
+
+    const community = await Community.findById(id);
+
+    if (!community) {
+      return res.status(404).json({
+        success: false,
+        message: "Community not found",
+      });
+    }
+
+    const contentIndex = community.contents.findIndex(
+      (content) =>
+        content._id.toString() ===
+        contentId
+    );
+
+    if (contentIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Content item not found",
+      });
+    }
+
+    const contentItem = community.contents[contentIndex];
+
+    if (
+      community.owner.toString() !==
+        req.user._id.toString() &&
+      contentItem.uploadedBy?.toString() !==
+        req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Only the community owner or uploader can delete this content",
+      });
+    }
+
+    community.contents.splice(contentIndex, 1);
+    await community.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Content deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 const getPopularCommunities = async (req, res) => {
