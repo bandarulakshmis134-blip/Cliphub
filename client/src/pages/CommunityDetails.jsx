@@ -16,6 +16,7 @@ import {
 } from "react";
 
 import defaultCommunity from "../assets/defaultCommunity.png";
+import defaultProfile from "../assets/defaultProfile.png";
 import UploadVideoModal from "../components/UploadVideoModal";
 import UploadFileModal from "../components/UploadFileModal";
 
@@ -577,6 +578,108 @@ const CommunityDetails = () => {
             grid-template-columns:1fr;
           }
         }
+
+        .modal-overlay{
+          position:fixed;
+          inset:0;
+
+          background:rgba(0,0,0,.35);
+
+          display:flex;
+          justify-content:center;
+          align-items:center;
+
+          z-index:9999;
+        }
+
+        .members-modal{
+          width:90%;
+          max-width:450px;
+
+          background:white;
+
+          border-radius:24px;
+
+          border:1px solid #E6DCDC;
+
+          padding:20px;
+        }
+
+        .members-header{
+          font-size:1.4rem;
+          font-weight:700;
+          color:#4A3F44;
+
+          margin-bottom:20px;
+        }
+
+        .members-list{
+          max-height:350px;
+
+          overflow-y:auto;
+
+          display:flex;
+          flex-direction:column;
+
+          gap:12px;
+
+          padding-right:5px;
+        }
+
+        .member-item{
+          display:flex;
+          align-items:center;
+
+          gap:12px;
+
+          padding:12px;
+
+          border:1px solid #EFE4E4;
+
+          border-radius:16px;
+
+          background:#FAF7F7;
+        }
+
+        .member-avatar{
+          width:50px;
+          height:50px;
+
+          border-radius:50%;
+
+          object-fit:cover;
+
+          border:2px solid #EFE4E4;
+        }
+
+        .member-name{
+          font-weight:600;
+          color:#4A3F44;
+        }
+
+        .close-members-btn{
+          width:100%;
+
+          margin-top:18px;
+
+          border:none;
+
+          background:#5B4A52;
+
+          color:white;
+
+          padding:14px;
+
+          border-radius:16px;
+
+          cursor:pointer;
+
+          font-weight:600;
+        }
+
+        .close-members-btn:hover{
+          background:#473940;
+        }
       `}</style>
 
       <div className="page">
@@ -814,26 +917,41 @@ const CommunityDetails = () => {
 
           {showMembers && (
             <div className="modal-overlay">
-              <div className="modal-content">
-                <h2>Community Members</h2>
+              <div className="members-modal">
+                <div className="members-header">
+                  Community Members
+                </div>
 
-                {community.members?.map((member) => (
-                  <div
-                    key={member._id || member.email}
-                    className="member-row"
-                  >
-                    <div>{member.fullName}</div>
-                    <div>{member.email}</div>
-                  </div>
-                ))}
+                <div className="members-list">
+                  {community.members?.map(
+                    (member) => (
+                      <div
+                        key={member._id || member.email}
+                        className="member-item"
+                      >
+                        <img
+                          src={
+                            member.profilePic ||
+                            defaultProfile
+                          }
+                          alt={member.fullName}
+                          className="member-avatar"
+                        />
+                        <div
+                          className="member-name"
+                        >
+                          {member.fullName}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
 
                 <button
-                  onClick={() => {
-                    setShowMembers(false);
-                  }}
-                  style={{
-                    marginTop: "15px",
-                  }}
+                  className="close-members-btn"
+                  onClick={() =>
+                    setShowMembers(false)
+                  }
                 >
                   Close
                 </button>
