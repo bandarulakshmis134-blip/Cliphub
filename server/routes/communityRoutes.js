@@ -15,6 +15,7 @@ const {
   deleteContent,
   getPopularCommunities,
   searchCommunities,
+  markContentViewed,
 } = require("../controllers/communityController");
 
 router.post(
@@ -50,6 +51,11 @@ router.get(
   "/search",
   searchCommunities
 );
+router.put(
+  "/content/:contentId/watch",
+  protect,
+  markContentViewed
+);
 router.get(
   "/:id",
   protect,
@@ -60,6 +66,7 @@ router.put(
   protect,
   joinCommunity
 );
+
 router.delete(
   "/:id",
   protect,

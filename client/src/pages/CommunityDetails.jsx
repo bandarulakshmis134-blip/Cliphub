@@ -5,6 +5,7 @@ import {
   FiLock,
   FiGlobe,
   FiTrash2,
+  FiEye,
 } from "react-icons/fi";
 import {
   useNavigate,
@@ -36,6 +37,11 @@ const CommunityDetails = () => {
   const [showFileModal, setShowFileModal] =
     useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [showWatchers, setShowWatchers] =
+    useState(false);
+
+  const [selectedContent, setSelectedContent] =
+    useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -558,6 +564,31 @@ const CommunityDetails = () => {
             flex:1;
           }
         }
+          .content-view-btn{
+  position:absolute;
+  top:12px;
+  right:56px;
+
+  width:34px;
+  height:34px;
+
+  border:none;
+  border-radius:50%;
+
+  background:rgba(255,255,255,0.9);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.content-view-btn:hover{
+  background:#EEF4FF;
+}
 
         @media(max-width:480px){
 
@@ -701,9 +732,12 @@ const CommunityDetails = () => {
 
               <img
                 src={
-                  community.logo ||
-                  defaultCommunity
-                }
+  community.logo &&
+  community.logo.trim() !== ""
+    ? community.logo
+    : defaultCommunity
+}
+               
                 alt={community.name}
                 className="community-logo"
               />
@@ -852,23 +886,71 @@ const CommunityDetails = () => {
               <div
                 key={item._id}
                 className="content-card"
-                onClick={() =>
-                  window.open(
-                    item.url,
-                    "_blank"
-                  )
-                }
+                onClick={async () => {
+
+                  try {
+
+                    const token =
+                      localStorage.getItem(
+                        "token"
+                      );
+
+                    await fetch(
+                      `https://cliphub-kyq2.onrender.com/api/communities/content/${item._id}/watch`,
+                      {
+                        method: "PUT",
+
+                        headers: {
+                          Authorization:
+                            `Bearer ${token}`,
+                        },
+                      }
+                    );
+
+                    window.open(
+                      item.url,
+                      "_blank"
+                    );
+
+                  } catch (error) {
+
+                    console.log(error);
+
+                    window.open(
+                      item.url,
+                      "_blank"
+                    );
+
+                  }
+
+                }}
               >
-                <button
-                  className="content-delete-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteContent(item._id);
-                  }}
-                  aria-label="Delete content"
-                >
-                  <FiTrash2 />
-                </button>
+                {isOwner && (
+                  <button
+                    className="content-view-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      setSelectedContent(item);
+
+                      setShowWatchers(true);
+                    }}
+                  >
+                    <FiEye />
+                  </button>
+                )}
+
+                {isOwner && (
+  <button
+    className="content-delete-btn"
+    onClick={(e) => {
+      e.stopPropagation();
+      deleteContent(item._id);
+    }}
+  >
+    <FiTrash2 />
+  </button>
+)}
 
                 <div className="content-info">
 
@@ -951,6 +1033,67 @@ const CommunityDetails = () => {
                   className="close-members-btn"
                   onClick={() =>
                     setShowMembers(false)
+                  }
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showWatchers && selectedContent && (
+            <div className="modal-overlay">
+              <div className="members-modal">
+                <div className="members-header">
+                  Viewed By
+                </div>
+
+                <div className="members-list">
+                  {selectedContent.watchedBy
+                    ?.length > 0 ? (
+
+                    selectedContent.watchedBy.map(
+                      (user) => (
+                        <div
+                          key={user._id}
+                          className="member-item"
+                        >
+                          <img
+                            src={
+                              user.profilePic ||
+                              defaultProfile
+                            }
+                            alt={user.fullName}
+                            className="member-avatar"
+                          />
+                          <div
+                            className="member-name"
+                          >
+                            {user.fullName}
+                          </div>
+                        </div>
+                      )
+                    )
+
+                  ) : (
+
+                    <div
+                      style={{
+                        padding: "20px",
+                        textAlign: "center",
+                        color: "#8A6D73",
+                      }}
+                    >
+                      No views yet
+                    </div>
+
+                  )}
+                </div>
+
+                <button
+                  className="close-members-btn"
+                  onClick={() =>
+                    setShowWatchers(false)
                   }
                 >
                   Close

@@ -71,7 +71,11 @@ const getCommunityById = async (
       )
       .populate(
         "members",
-        "fullName email profilePic"
+        "fullName profilePic"
+      )
+      .populate(
+        "contents.watchedBy",
+        "fullName profilePic"
       );
 
     if (!community) {
@@ -425,6 +429,55 @@ const searchCommunities =
 
     }
   };
+  const markContentViewed =
+  async (req, res) => {
+
+    const communities =
+      await Community.find();
+
+    let content;
+
+    let community;
+
+    for (const c of communities) {
+
+      content =
+        c.contents.id(
+          req.params.contentId
+        );
+
+      if (content) {
+        community = c;
+        break;
+      }
+    }
+
+    if (!content) {
+      return res.status(404).json({
+        success:false,
+      });
+    }
+
+    const alreadyViewed =
+      content.watchedBy.some(
+        (id) =>
+          id.toString() ===
+          req.user._id.toString()
+      );
+
+    if (!alreadyViewed) {
+
+      content.watchedBy.push(
+        req.user._id
+      );
+
+      await community.save();
+    }
+
+    res.json({
+      success:true,
+    });
+};
 
 module.exports = {
   createCommunity,
@@ -437,4 +490,5 @@ module.exports = {
   deleteContent,
   getPopularCommunities,
   searchCommunities,
+  markContentViewed,
 };
