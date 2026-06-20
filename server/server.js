@@ -20,7 +20,7 @@ const app = express();
 app.use(
   cors({
     origin:
-      "https://cliphub-nu.vercel.app/",
+      "https://cliphub-nu.vercel.app",
   })
 );
 
