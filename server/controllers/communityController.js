@@ -434,6 +434,7 @@ module.exports = {
   joinCommunity,
   getUserCommunities,
   addContent,
+  deleteContent,
   getPopularCommunities,
   searchCommunities,
 };
